@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: deployment-worker
+
+  main:
+    web-application-type: none
