@@ -2,6 +2,8 @@ package com.fastship.platformapi.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
@@ -12,6 +14,7 @@ import java.util.UUID;
 @Table(
         name= "deployments"
 )
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Deployment {
     @Id

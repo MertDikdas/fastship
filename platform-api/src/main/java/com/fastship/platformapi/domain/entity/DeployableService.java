@@ -2,6 +2,7 @@ package com.fastship.platformapi.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
@@ -13,6 +14,7 @@ import java.util.UUID;
 @Table(
         name= "deployable_services"
 )
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class DeployableService {
 
@@ -26,7 +28,7 @@ public class DeployableService {
     @Column(name= "name", nullable = false, length = 120)
     private String name;
 
-    @Column(name= "config_path", nullable = false, length = 500)
+    @Column(name= "config_path", nullable = false, length = 255)
     private String configPath;
 
     @Column(name="created_at", nullable = false)
