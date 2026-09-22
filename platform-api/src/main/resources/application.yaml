@@ -1,3 +1,17 @@
 spring:
   application:
     name: platform-api
+
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5433/fastship}
+    username: ${DB_USERNAME:fastship}
+    password: ${DB_PASSWORD:fastship}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+
+
+  flyway:
+    enabled: true
