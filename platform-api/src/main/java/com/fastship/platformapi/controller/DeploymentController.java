@@ -10,6 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/deployments")
 @RequiredArgsConstructor
@@ -28,5 +31,26 @@ public class DeploymentController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(DeploymentResponse.from(deployment));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<DeploymentResponse>> getAllDeployments(){
+        List<DeploymentResponse> responses = deploymentService
+                .getAllDeployments()
+                .stream()
+                .map(item -> DeploymentResponse.from(item))
+                .toList();
+
+        return ResponseEntity.ok(responses);
+    }
+
+    @GetMapping("/{deploymentId}")
+    public ResponseEntity<DeploymentResponse> getDeploymentById(
+            @PathVariable UUID deploymentId
+    ){
+        Deployment deployment = deploymentService.getDeploymentById(deploymentId);
+        return ResponseEntity.ok(
+                DeploymentResponse.from(deployment)
+        );
     }
 }

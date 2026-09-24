@@ -46,6 +46,22 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiError);
     }
 
+    @ExceptionHandler(DeploymentNotFoundException.class)
+    public ResponseEntity<ApiError> handleDeploymentNotFound(
+            DeploymentNotFoundException e,
+            HttpServletRequest request
+    ){
+        ApiError apiError = new ApiError(
+                HttpStatus.NOT_FOUND.value(),
+                "DEPLOYMENT_NOT_FOUND",
+                e.getMessage(),
+                request.getRequestURI().toLowerCase(Locale.ROOT),
+                Instant.now()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiError);
+
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiError> handleValidation(
             MethodArgumentNotValidException exception,
