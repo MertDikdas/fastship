@@ -64,4 +64,23 @@ public class OutboxMessage {
         this.createdAt = Instant.now();
         this.attemptCount = 0;
     }
+
+    public void registerAttempt(){
+        this.attemptCount++;
+    }
+
+    public void markPublished(){
+        this.publishedAt = Instant.now();
+    }
+
+    public void markFailed(String error){
+        if(error == null){
+            this.lastError = "Unknown Kafka publishing error";
+            return;
+        }
+
+        this.lastError = error.length()>2000 ? error.substring(0, 2000) : error;
+    }
+
+
 }
