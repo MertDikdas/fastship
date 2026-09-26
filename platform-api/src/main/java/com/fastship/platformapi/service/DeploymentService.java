@@ -2,17 +2,14 @@ package com.fastship.platformapi.service;
 
 import com.fastship.platformapi.domain.entity.DeployableService;
 import com.fastship.platformapi.domain.entity.Deployment;
-import com.fastship.platformapi.domain.entity.DeploymentStatus;
 import com.fastship.platformapi.exceptions.DeployableServiceNotFoundException;
 import com.fastship.platformapi.exceptions.DeploymentNotFoundException;
 import com.fastship.platformapi.repository.DeployableServiceRepository;
 import com.fastship.platformapi.repository.DeploymentRepository;
-import com.fastship.platformapi.repository.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,6 +19,7 @@ public class DeploymentService {
 
     private final DeploymentRepository deploymentRepository;
     private final DeployableServiceRepository deployableServiceRepository;
+    private final OutboxService outboxService;
 
     @Transactional
     public Deployment createDeployment(UUID serviceId) {
@@ -31,7 +29,11 @@ public class DeploymentService {
 
         Deployment deployment = new Deployment(deployableService);
 
-        return deploymentRepository.save(deployment);
+        Deployment savedDeployment = deploymentRepository.save(deployment);
+
+        outboxService.saveDeploymentRequested(deployment);
+
+        return savedDeployment;
     }
 
     @Transactional(readOnly = true)
