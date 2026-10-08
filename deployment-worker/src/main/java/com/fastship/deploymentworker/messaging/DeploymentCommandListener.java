@@ -1,5 +1,6 @@
 package com.fastship.deploymentworker.messaging;
 
+import com.fastship.deploymentworker.execution.DeploymentExecutionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -13,6 +14,7 @@ import tools.jackson.databind.json.JsonMapper;
 public class DeploymentCommandListener {
 
     private final JsonMapper jsonMapper;
+    private final DeploymentExecutionService executionService;
 
     @KafkaListener(
             topics = "fastship.deployment.commands.v1"
@@ -30,9 +32,21 @@ public class DeploymentCommandListener {
                     "Unsupported schema version: " + command.schemaVersion()
             );
         }
+        boolean claimed =
+                executionService.tryClaim(command.deploymentId());
+
+        if (!claimed) {
+            log.info(
+                    "Skipping already claimed deployment deploymentId={} partition={} offset={}",
+                    command.deploymentId(),
+                    record.partition(),
+                    record.offset()
+            );
+            return;
+        }
 
         log.info(
-                "Received DeploymentRequested deploymentId={} serviceId={} partition={} offset={} key={}",
+                "Claimed DeploymentRequested deploymentId={} serviceId={} partition={} offset={} key={}",
                 command.deploymentId(),
                 command.serviceId(),
                 record.partition(),

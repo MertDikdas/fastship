@@ -5,6 +5,24 @@ spring:
   main:
     web-application-type: none
 
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5433/fastship}
+    username: ${DB_USERNAME:fastship}
+    password: ${DB_PASSWORD:fastship}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        default_schema: worker
+
+  flyway:
+    enabled: true
+    schemas: worker
+    default-schema: worker
+    create-schemas: true
+
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
 
