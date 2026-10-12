@@ -22,6 +22,15 @@ public class DeploymentExecution {
     @Column(nullable = false, length = 32)
     private DeploymentExecutionStatus status;
 
+    @Column(name = "worker_id", nullable = false, length = 100)
+    private String workerId;
+
+    @Column(name = "heartbeat_at", nullable = false)
+    private Instant heartbeatAt;
+
+    @Column(name = "attempt_count", nullable = false)
+    private int attemptCount;
+
     @Column(name = "started_at", nullable = false)
     private Instant startedAt;
 
@@ -31,13 +40,16 @@ public class DeploymentExecution {
     @Column(name = "completed_at")
     private Instant completedAt;
 
-    public DeploymentExecution(UUID deploymentId) {
+    public DeploymentExecution(UUID deploymentId, String workerId) {
         Instant now = Instant.now();
 
         this.deploymentId = deploymentId;
         this.status = DeploymentExecutionStatus.PROCESSING;
+        this.workerId = workerId;
         this.startedAt = now;
         this.updatedAt = now;
+        this.heartbeatAt = now;
+        this.attemptCount = 1;
     }
 
     public void markSucceeded() {
