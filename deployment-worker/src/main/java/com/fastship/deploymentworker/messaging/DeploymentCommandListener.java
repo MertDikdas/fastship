@@ -33,7 +33,10 @@ public class DeploymentCommandListener {
             );
         }
         boolean claimed =
-                executionService.tryClaim(command.deploymentId());
+                executionService.tryClaim(
+                        command.deploymentId(),
+                        command.serviceId()
+                );
 
         if (!claimed) {
             log.info(

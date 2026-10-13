@@ -31,6 +31,9 @@ public class DeploymentExecution {
     @Column(name = "attempt_count", nullable = false)
     private int attemptCount;
 
+    @Column(name = "service_id", nullable = false)
+    private UUID serviceId;
+
     @Column(name = "started_at", nullable = false)
     private Instant startedAt;
 
@@ -40,10 +43,15 @@ public class DeploymentExecution {
     @Column(name = "completed_at")
     private Instant completedAt;
 
-    public DeploymentExecution(UUID deploymentId, String workerId) {
+    public DeploymentExecution(
+            UUID deploymentId,
+            UUID serviceId,
+            String workerId
+    ) {
         Instant now = Instant.now();
 
         this.deploymentId = deploymentId;
+        this.serviceId = serviceId;
         this.status = DeploymentExecutionStatus.PROCESSING;
         this.workerId = workerId;
         this.startedAt = now;

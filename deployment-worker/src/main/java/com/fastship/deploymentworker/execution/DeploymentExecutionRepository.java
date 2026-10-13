@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 public interface DeploymentExecutionRepository
@@ -15,6 +16,7 @@ public interface DeploymentExecutionRepository
     @Query(value = """
     INSERT INTO worker.deployment_executions (
         deployment_id,
+        service_id,
         status,
         worker_id,
         started_at,
@@ -24,6 +26,7 @@ public interface DeploymentExecutionRepository
     )
     VALUES (
         :deploymentId,
+        :serviceId,
         'PROCESSING',
         :workerId,
         CURRENT_TIMESTAMP,
@@ -35,6 +38,7 @@ public interface DeploymentExecutionRepository
     """, nativeQuery = true)
     int tryClaim(
             @Param("deploymentId") UUID deploymentId,
+            @Param("serviceId") UUID serviceId,
             @Param("workerId") String workerId
     );
 
@@ -64,4 +68,19 @@ public interface DeploymentExecutionRepository
       AND status = 'PROCESSING'
     """, nativeQuery = true)
     int refreshHeartbeats(@Param("workerId") String workerId);
+
+    @Query(value = """
+    SELECT
+        deployment_id AS deploymentId,
+        service_id AS serviceId
+    FROM worker.deployment_executions
+    WHERE status = 'PROCESSING'
+      AND heartbeat_at < :staleBefore
+    ORDER BY heartbeat_at ASC
+    LIMIT :limit
+    """, nativeQuery = true)
+    List<StaleDeploymentExecution> findStaleExecutions(
+            @Param("staleBefore") Instant staleBefore,
+            @Param("limit") int limit
+    );
 }
